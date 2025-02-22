@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  jupyter:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: jupyter_notebook
+    ports:
+      - "8888:8888"  # Jupyter Notebook Port
+    volumes:
+      - ..:/app
+    command: ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
+
+  mlflow:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: mlflow_server
+    ports:
+      - "5000:5000"  # MLflow Port
+    volumes:
+      - ../mlruns:/app/mlruns
+    environment:
+      - MLFLOW_TRACKING_URI=http://0.0.0.0:5000
+    command: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]
