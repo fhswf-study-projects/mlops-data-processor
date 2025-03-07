@@ -29,7 +29,9 @@ class DVCClient:
             "s3",
             aws_access_key_id=os.environ[EnvConfig.S3_ACCESS_KEY_ID.value],
             aws_secret_access_key=os.environ[EnvConfig.S3_SECRET_ACCESS_KEY.value],
-            endpoint_url="http://s3:9000",  # Use None for AWS S3, set URL for MinIO
+            endpoint_url=os.environ[
+                EnvConfig.S3_ENDPOINT_URL.value
+            ],  # Use None for AWS S3, set URL for MinIO
         )
 
     def read_data_from(
