@@ -1,9 +1,17 @@
+import os
 import pytest
 
 from unittest.mock import patch, MagicMock
 from botocore.exceptions import ClientError
 
 from app.core.dvc_client import DVCClient
+
+
+@pytest.fixture(scope="session", autouse=True)
+def set_env():
+    os.environ["S3_ACCESS_KEY_ID"] = "Kk7BHpmJxjYMZhAv"
+    os.environ["S3_SECRET_ACCESS_KEY"] = "xwe7952LUtBFEQbmgJHvkdsf"
+    os.environ["S3_ENDPOINT_URL"] = "http://s3.localhost"
 
 
 @pytest.fixture
