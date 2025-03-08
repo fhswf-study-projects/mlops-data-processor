@@ -6,7 +6,9 @@ name: Publish Container
 # documentation.
 
 on:
-  workflow_call:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
 
 env:
   # Use for multi-branch deployment
