@@ -64,7 +64,7 @@ def clean_and_tranform(*args, **kwargs):
         }
 
     X = df.drop("income", axis=1)
-    y = df["income"].apply(
+    y = df["income"].apply(  #  type: ignore
         lambda x: 1 if x == ">50K" else 0
     )  # Zielvariable binär codieren
 
