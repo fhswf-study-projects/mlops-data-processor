@@ -1,0 +1,18 @@
+{
+    "include": [
+      "app",
+      "tests"
+    ],
+  
+    "exclude": [
+      "**/node_modules",
+      "**/__pycache__",
+      "**/*.ipynb"
+    ],
+
+    "reportMissingImports": "error",
+    "reportMissingTypeStubs": false,
+
+    "venvPath": ".",
+    "venv": ".venv"
+  }
