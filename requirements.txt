@@ -7,3 +7,4 @@ seaborn
 joblib
 optuna
 jupyter
+xgboost
