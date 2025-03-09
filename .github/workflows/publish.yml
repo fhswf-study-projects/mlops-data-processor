@@ -23,7 +23,7 @@ jobs:
 
   build_and_push:
     runs-on: self-hosted
-    environment: ${{ env.DEPLOY_ENV }}
+    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
     permissions:
       contents: read
       packages: write
