@@ -8,7 +8,7 @@ name: Publish Container
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: [ "staging", "main" ]
 
 env:
   # Use for multi-branch deployment
@@ -23,7 +23,7 @@ jobs:
 
   build_and_push:
     runs-on: self-hosted
-    environment: ${{ env.DEPLOY_ENV }}
+    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
     permissions:
       contents: read
       packages: write
@@ -88,24 +88,23 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args: |
+          secret-envs: |
             MPLCONFIGDIR=${{ vars.MPLCONFIGDIR }}
+            S3_BUCKET_NAME=${{ vars.S3_BUCKET_NAME }}
+            S3_ENDPOINT_URL=${{ secrets.S3_ENDPOINT_URL }}
+            S3_ACCESS_KEY_ID=${{ secrets.S3_ACCESS_KEY_ID }}
+            S3_SECRET_ACCESS_KEY=${{ secrets.S3_SECRET_ACCESS_KEY }}
             C_FORCE_ROOT=${{ vars.C_FORCE_ROOT }}
             CELERY_DEFAULT_QUEUE=${{ vars.CELERY_DEFAULT_QUEUE }}
+            CELERY_BACKEND_CONNECTION=${{ secrets.CELERY_BACKEND_CONNECTION }}
+            CELERY_BROKER_CONNECTION=${{ secrets.CELERY_BROKER_CONNECTION }}
+            MLFLOW_TRACKING_URI=${{ secrets.MLFLOW_TRACKING_URI }}
             OTEL_SERVICE_NAME=${{ vars.OTEL_SERVICE_NAME }}
+            OTEL_EXPORTER_OTLP_ENDPOINT=${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
             OTEL_PYTHON_LOG_LEVEL=${{ vars.OTEL_PYTHON_LOG_LEVEL }}
             OTEL_PYTHON_LOG_CORRELATION=${{ vars.OTEL_PYTHON_LOG_CORRELATION }}
             OTEL_METRIC_EXPORT_INTERVAL=${{ vars.OTEL_METRIC_EXPORT_INTERVAL }}
             OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=${{ vars.OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED }}
-            S3_BUCKET_NAME=${{ vars.S3_BUCKET_NAME }}
-          secret-envs: |
-            S3_ENDPOINT_URL=${{ secrets.S3_ENDPOINT_URL }}
-            S3_ACCESS_KEY_ID=${{ secrets.S3_ACCESS_KEY_ID }}
-            S3_SECRET_ACCESS_KEY=${{ secrets.S3_SECRET_ACCESS_KEY }}
-            CELERY_BACKEND_CONNECTION=${{ secrets.CELERY_BACKEND_CONNECTION }}
-            CELERY_BROKER_CONNECTION=${{ secrets.CELERY_BROKER_CONNECTION }}
-            MLFLOW_TRACKING_URI=${{ secrets.MLFLOW_TRACKING_URI }}
-            OTEL_EXPORTER_OTLP_ENDPOINT=${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
