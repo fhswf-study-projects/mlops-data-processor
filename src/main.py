@@ -62,7 +62,7 @@ def main():
     best_model_path = get_best_optimized_model()
     if best_model_path:
         logging.info(f"Using {best_model_path} for inference...")
-        test_prediction = make_inference(best_model_path)  # Preprocessing wird in inference.py geladen
+        test_prediction = make_inference(best_model_path)  # Preprocessing loaded in inference.py
         logging.info(f"Test Prediction: {test_prediction}")
     else:
         logging.warning("No optimized model found for inference.")

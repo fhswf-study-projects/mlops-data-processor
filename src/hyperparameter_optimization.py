@@ -42,10 +42,10 @@ def optimize_hyperparameters(X, y, preprocessor, model_type="random_forest"):
     Returns:
         dict: The best hyperparameters found by Optuna.
     """
-    optimized_model_name = f"{model_type}_optimized_model.joblib"
+    optimized_model_name = f"{model_type}"
 
     # Check if the optimized model already exists
-    if model_exists(optimized_model_name):
+    if optimized_model_exists(optimized_model_name):
         print(f"Skipping hyperparameter optimization for {model_type}, already exists.")
         return {}
 
@@ -104,7 +104,7 @@ def optimize_hyperparameters(X, y, preprocessor, model_type="random_forest"):
 
     # Run Optuna study
     study = optuna.create_study(direction="maximize")
-    study.optimize(objective, n_trials=20)
+    study.optimize(objective, n_trials=2)
 
     best_params = study.best_params
     print(f"Best hyperparameters for {model_type}: {best_params}")

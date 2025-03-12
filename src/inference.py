@@ -4,19 +4,19 @@ from data_preprocessing import clean_data, feature_engineering, preprocess_data,
 
 def make_inference(best_model_path):
     """
-    Loads a trained model and makes a test prediction.
+        Loads a trained model and makes a test prediction.
 
-    Parameters:
-        best_model_path (str): Path to the trained model file.
+        Parameters:
+            best_model_path (str): Path to the trained model file.
 
-    Returns:
-        str: The predicted income class (">50K" or "<=50K").
+        Returns:
+            str: The predicted income class (">50K" or "<=50K").
     """
     if best_model_path is None:
         print("No optimized model available for inference.")
         return None
 
-    # Load the trained model
+    # Load the trained model (Pipeline including the preprocessor)
     model = joblib.load(best_model_path)
 
     # Define a new sample test input (one person's data)
@@ -36,16 +36,10 @@ def make_inference(best_model_path):
     if "income" in sample_data.columns:
         sample_data = sample_data.drop(columns=["income"])
 
-    # Rebuild and fit the preprocessor on the same dataset
-    preprocessor, X, _ = full_preprocessing_pipeline("data/raw/adult.csv")
-    preprocessor.fit(X)  # Train the preprocessor again
-
-    # Apply the same preprocessing pipeline used in training
-    sample_data_transformed = preprocessor.transform(sample_data)
-
-    # Make the prediction
-    prediction = model.predict(sample_data_transformed)[0]
+    # Direkt die Vorhersage aus der Pipeline holen, ohne extra Transformation:
+    prediction = model.predict(sample_data)[0]
     predicted_class = ">50K" if prediction == 1 else "<=50K"
 
     print(f"Test Prediction: {predicted_class}")
     return predicted_class
+
