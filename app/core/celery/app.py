@@ -13,7 +13,7 @@ current_app.config_from_object(Config)
 current_app.autodiscover_tasks(
     [
         "app.tasks.data_processing",
-        "app.tasks.feature_engineering",
+        "app.tasks.data_transformation",
         "app.tasks.modeling",
         "app.tasks.workflows",
     ]

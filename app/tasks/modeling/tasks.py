@@ -162,7 +162,7 @@ def optimize_hyperparameters(*args, **kwargs):
 
 @current_app.task(name="modeling.predict")
 def predict(*args, **kwargs):
-    logger.info("Vorhersage Einkommensgruppe...")
+    logger.info("Make Income Prediction...")
     data_paths = args[0]
     dvc_client = DVCClient()
 
