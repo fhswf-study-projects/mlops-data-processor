@@ -8,7 +8,7 @@ name: Publish Container
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: [ "staging", "main" ]
 
 env:
   # Use for multi-branch deployment

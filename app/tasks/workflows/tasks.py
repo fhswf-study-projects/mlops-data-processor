@@ -1,7 +1,7 @@
 import logging
 
 import pandas as pd
-from celery import chain, group, signature
+from celery import chain, signature
 
 from app.core.celery.app import current_app
 from app.core.dvc_client import DVCClient
@@ -32,8 +32,10 @@ def model_training_workflow(self, *args, **kwargs):
     ]
     task_chain = chain(tasks)
 
-    self.request.chain.append(group(task_chain))
+    # self.request.chain.append(group(task_chain))
     logger.info("Starte die Machine Learning Pipeline...")
+
+    return {"result_task_id": task_chain.apply_async().id}  # type: ignore
 
 
 @current_app.task(name="workflows.make_prediction", bind=True, acks_late=True)
