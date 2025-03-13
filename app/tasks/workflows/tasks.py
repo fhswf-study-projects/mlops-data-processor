@@ -24,7 +24,9 @@ def model_training_workflow(*args, **kwargs):
             },
         ),
         signature("data_processing.clean_data"),
-        signature("data_transformation.engineer_features"),
+        signature(
+            "data_transformation.engineer_features", kwargs={"body": {"mode": "train"}}
+        ),
         signature(
             "data_transformation.encode_data", kwargs={"body": {"mode": "train"}}
         ),
