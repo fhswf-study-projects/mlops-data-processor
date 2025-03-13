@@ -43,7 +43,7 @@ def engineer_features(*args, **kwargs):
 
     if mode != "predict":
         # Encode income as binary (0 = <=50K, 1 = >50K)
-        df["income"] = df["income"].apply(lambda x: 1 if ">50K" in x else 0)
+        df["income"] = df["income"].apply(lambda x: 1 if ">50K" in x else 0)  #  type: ignore
 
     return {
         "df": dvc_client.save_data_to(df, "engineer_features/df.jobib"),
