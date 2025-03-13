@@ -10,8 +10,8 @@ from app.core.dvc_client import DVCClient
 logger = logging.getLogger(__name__)
 
 
-@current_app.task(name="workflows.model_training", bind=True, acks_late=True)
-def model_training_workflow(self, *args, **kwargs):
+@current_app.task(name="workflows.model_training", acks_late=True)
+def model_training_workflow(*args, **kwargs):
     optimize = kwargs["body"].get("optimize", False)
     tasks = [
         signature(
@@ -23,8 +23,10 @@ def model_training_workflow(self, *args, **kwargs):
                 }
             },
         ),
+        signature("data_processing.clean_data"),
+        signature("data_transformation.engineer_features"),
         signature(
-            "feature_engineering.clean_and_tranform", kwargs={"body": {"mode": "train"}}
+            "data_transformation.encode_data", kwargs={"body": {"mode": "train"}}
         ),
         signature("modeling.train_optimized_model")
         if optimize
@@ -32,14 +34,13 @@ def model_training_workflow(self, *args, **kwargs):
     ]
     task_chain = chain(tasks)
 
-    # self.request.chain.append(group(task_chain))
-    logger.info("Starte die Machine Learning Pipeline...")
+    logger.info("Start Machine Learning Pipeline...")
 
     return {"result_task_id": task_chain.apply_async().id}  # type: ignore
 
 
-@current_app.task(name="workflows.make_prediction", bind=True, acks_late=True)
-def prediction_workflow(self, *args, **kwargs):
+@current_app.task(name="workflows.make_prediction", acks_late=True)
+def prediction_workflow(*args, **kwargs):
     dvc_client = DVCClient()
 
     data_json = kwargs["body"]["data"]
@@ -48,7 +49,7 @@ def prediction_workflow(self, *args, **kwargs):
 
     tasks = [
         signature(
-            "feature_engineering.clean_and_tranform",
+            "data_processing.clean_data",
             args=(
                 {
                     "df": dvc_client.save_data_to(
@@ -56,14 +57,18 @@ def prediction_workflow(self, *args, **kwargs):
                     )
                 },
             ),
+        ),
+        signature(
+            "data_transformation.engineer_features",
             kwargs={"body": {"mode": "predict"}},
+        ),
+        signature(
+            "data_transformation.encode_data", kwargs={"body": {"mode": "predict"}}
         ),
         signature("modeling.predict"),
     ]
     task_chain = chain(tasks)
 
-    logger.info("Starte die Prediction Pipeline...")
-
-    #     self.request.chain.append(group(task_chain))
+    logger.info("Start Prediction Pipeline...")
 
     return {"result_task_id": task_chain.apply_async().id}  # type: ignore
