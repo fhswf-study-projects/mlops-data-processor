@@ -58,7 +58,10 @@ def prediction_workflow(*args, **kwargs):
                 },
             ),
         ),
-        signature("data_transformation.engineer_features"),
+        signature(
+            "data_transformation.engineer_features",
+            kwargs={"body": {"mode": "predict"}},
+        ),
         signature(
             "data_transformation.encode_data", kwargs={"body": {"mode": "predict"}}
         ),

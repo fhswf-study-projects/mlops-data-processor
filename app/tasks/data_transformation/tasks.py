@@ -24,6 +24,7 @@ def engineer_features(*args, **kwargs):
     logger.info("Start Feature Engineering...")
     # pick first non empty
     data_paths = list(filter(None, args))[0]
+    mode = kwargs["body"]["mode"]
     dvc_client = DVCClient()
 
     # Read data
@@ -40,8 +41,9 @@ def engineer_features(*args, **kwargs):
     labels = ["Young", "Middle-aged", "Experienced", "Senior"]
     df["age-group"] = cut(df["age"], bins=bins, labels=labels)
 
-    # Encode income as binary (0 = <=50K, 1 = >50K)
-    df["income"] = df["income"].apply(lambda x: 1 if ">50K" in x else 0)
+    if mode != "predict":
+        # Encode income as binary (0 = <=50K, 1 = >50K)
+        df["income"] = df["income"].apply(lambda x: 1 if ">50K" in x else 0)
 
     return {
         "df": dvc_client.save_data_to(df, "engineer_features/df.jobib"),
@@ -86,13 +88,13 @@ def encode_data(*args, **kwargs):
     # Definiere numerische und kategorische Spalten
     numeric_features = [
         "age",
-        "fnlwgt",
         "educational-num",
         "capital-gain",
         "capital-loss",
         "hours-per-week",
     ]
     categorical_features = [
+        "age-group",
         "workclass",
         "education",
         "marital-status",
