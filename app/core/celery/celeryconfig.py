@@ -1,3 +1,5 @@
+"""File serving all needed celery config variables in form of python class"""
+
 import os
 
 from app.constants import EnvConfig

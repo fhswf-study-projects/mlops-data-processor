@@ -34,9 +34,7 @@ class DVCClient:
             ],  # Use None for AWS S3, set URL for MinIO
         )
 
-    def read_data_from(
-        self, source, version_id=None, bucket_name=None
-    ) -> Union[Any, None]:
+    def read_data_from(self, source: str, bucket_name=None) -> Union[Any, None]:
         obj = None
         if not bucket_name:
             bucket_name = os.environ[EnvConfig.S3_BUCKET_NAME.value]
@@ -50,7 +48,7 @@ class DVCClient:
             logger.error("Error in downloading file:", e)
         return obj
 
-    def save_data_to(self, obj, destination, bucket_name=None) -> str:
+    def save_data_to(self, obj, destination: str, bucket_name=None) -> str:
         if not bucket_name:
             bucket_name = os.environ[EnvConfig.S3_BUCKET_NAME.value]
 
@@ -73,8 +71,9 @@ class DVCClient:
             else:
                 logger.info(f"Bucket {bucket_name} already exists")
 
+            # Serialize object into RAM, avoid temporary file creation
             buffer = io.BytesIO()
-            joblib.dump(obj, buffer)  # Serialize object
+            joblib.dump(obj, buffer)
             buffer.seek(0)
 
             self.client.put_object(

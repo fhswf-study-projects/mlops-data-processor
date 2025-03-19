@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 
 def plot_confusion_matrix(cm, filename):
-    """Erstellt eine Confusion Matrix und speichert sie als Bild."""
+    """Plots Confusion Matrix and saves it as a picture."""
     plt.figure(figsize=(6, 6))
     sns.heatmap(
         cm,
