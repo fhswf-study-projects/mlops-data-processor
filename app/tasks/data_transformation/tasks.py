@@ -1,3 +1,10 @@
+"""Every celery task is concepted in very similar fashion as
+1. Reading data/objects from the previous task in the chain
+2. Performing any operations on/with help of it
+3. Give the objects to the very next task, as a serializable object.
+So, typically the every infos are stored in s3 and only locations will be transfered via return.
+"""
+
 import logging
 
 from pandas import DataFrame, cut
@@ -7,6 +14,7 @@ from sklearn.compose import ColumnTransformer
 from app.core.celery.app import current_app
 from app.core.dvc_client import DVCClient
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -15,8 +23,8 @@ def engineer_features(*args, **kwargs):
     """
     Enhances the dataset by adding new features.
 
-    Parameters:
-        df (pd.DataFrame): The input dataframe.
+    Raises:
+        TypeError: raise TypeError when the loaded object is not a pandas DataFrame.
 
     Returns:
         dict: A dict with the s3 path to the dataframe with additional features.
@@ -55,6 +63,9 @@ def encode_data(*args, **kwargs):
     """
     Prepares the dataset for model training by encoding categorical variables
     and scaling numerical features.
+
+    Raises:
+        TypeError: raise TypeError when the loaded object is not a pandas DataFrame.
 
     Returns:
         dict: A dict containing the s3 paths to preprocessing pipeline, feature matrix X, and target variable y.
