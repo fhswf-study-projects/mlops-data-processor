@@ -1,4 +1,4 @@
-# Celery Worker Service (a.k.a. mlops-data-processor)
+# Celery Worker Service (a.k.a. data-processor)
 This repository contains a Dockerized Celery worker that processes background tasks in a distributed system.
 
 ## Features
@@ -25,8 +25,8 @@ The following environment variables must be set for the worker to function corre
 | `CELERY_BROKER_CONNECTION`  | URL of the message broker (Redis, RabbitMQ)              | None                     |
 | `CELERY_BACKEND_CONNECTION` | URL of the backend for storing task results              | None                     |
 | `CELERY_DEFAULT_QUEUE`      | Default queue name used by celery if no custom specified | `tasks`                  |
-| `S3_ENDPOINT_URL`           | URL of the s3-like storage system                        | `celery-data-holder`     |
-| `S3_BUCKET_NAME`            | Name of s3-like bucket for data exchange between tasks   | None                     |
+| `S3_ENDPOINT_URL`           | URL of the s3-like storage system                        | None                     |
+| `S3_BUCKET_NAME`            | Name of s3-like bucket for data exchange between tasks   | `celery-data-holder`     |
 | `S3_ACCESS_KEY_ID`          | Access key id to access private s3-like bucket(s)        | None                     |
 | `S3_SECRET_ACCESS_KEY`      | Secret access key to access private s3-like bucket(s)    | None                     |
 | `C_FORCE_ROOT`              | Forces Celery to run workers as root                     | false                    |
@@ -40,14 +40,14 @@ The following environment variables must be set for the worker to function corre
 ### Build and Run with Docker
 ```sh
 # Build the Docker image
-docker build -t mlops-data-processor .
+docker build -t data-processor .
 
 # Run the worker container
 docker run -d \
   --name mlops_data_processor \
   --env CELERY_BROKER_CONNECTION=amqp://admin:adminadmin@rabbitmq:5672/ \
   --env RESULT_BACKEND=db+postgresql://celery:adminadmin@postgres:5432/celery_storage \
-  mlops-data-processor
+  data-processor
 ```
 
 ### Docker Compose
@@ -55,7 +55,7 @@ To deploy with Docker Compose, create a `docker-compose.yml` file:
 
 ```yaml
 services:
-  worker:
+  data-processor:
     build: .
     environment:
       - BROKER_URL=amqp://admin:adminadmin@rabbitmq:5672/
@@ -78,13 +78,13 @@ docker-compose up -d
 ## Scaling Workers
 You can scale the number of Celery workers dynamically:
 ```sh
-docker-compose up --scale worker=3 -d
+docker-compose up --scale data-processor=3 -d
 ```
 
 ## Logs and Monitoring
 To check worker logs:
 ```sh
-docker logs -f mlops_data_processor
+docker logs -f data-processor
 ```
 
 To monitor tasks:
@@ -94,6 +94,3 @@ celery -A app.core.celery.app status
 
 ## Contributing
 Contributions are welcome! Feel free to submit a pull request or open an issue.
-
-## License
-This project is licensed under the MIT License.
