@@ -1,3 +1,10 @@
+"""Every celery task is concepted in very similar fashion as
+1. Reading data/objects from the previous task in the chain
+2. Performing any operations on/with help of it
+3. Give the objects to the very next task, as a serializable object.
+So, typically the every infos are stored in s3 and only locations will be transfered via return.
+"""
+
 import logging
 
 import mlflow
@@ -30,8 +37,7 @@ RANDOM_STATE = 42
 
 @current_app.task(name="modeling.train_base_model")
 def train_base_model(*args, **kwargs):
-    """Trainiert ein Machine Learning Modell und speichert es mit MLflow."""
-    logger.info("Trainiere das erste Modell ohne Hyperparameter-Optimierung...")
+    logger.info("Training the base model with no optimizing the model parameters...")
     data_paths = args[0]
     dvc_client = DVCClient()
 
@@ -86,14 +92,13 @@ def train_base_model(*args, **kwargs):
         mlflow.sklearn.log_model(pipeline, "best_model")
 
     logger.info(
-        f"Modell gespeichert unter income_classification mit Accuracy: {accuracy:.4f}"
+        f"Model saved under income_classification with Accuracy: {accuracy:.4f}"
     )
 
 
 @current_app.task(name="modeling.train_optimized_model")
 def optimize_hyperparameters(*args, **kwargs):
-    """Führt Hyperparameter-Optimierung mit Optuna durch und gibt die besten Werte zurück."""
-    logger.info("Trainiere das erste Modell mit Hyperparameter-Optimierung...")
+    logger.info("Training the model with hyperparameter optimization...")
     data_paths = args[0]
     dvc_client = DVCClient()
 
@@ -110,7 +115,7 @@ def optimize_hyperparameters(*args, **kwargs):
     )
 
     def objective(trial):
-        """Optuna-Ziel: Hyperparameter-Optimierung für das Modell"""
+        """Optuna-Target: Hyperparameter-Optimierung for the Model"""
         n_estimators = trial.suggest_int("n_estimators", 50, 200)
         max_depth = trial.suggest_int("max_depth", 5, 30)
 
@@ -157,12 +162,12 @@ def optimize_hyperparameters(*args, **kwargs):
     study = optuna.create_study(direction="maximize")
     study.optimize(objective, n_trials=10)  # type: ignore
 
-    logger.info("Modell gespeichert unter income_classification_hyperopt")
+    logger.info("Model saved under income_classification_hyperopt")
 
 
 @current_app.task(name="modeling.predict")
 def predict(*args, **kwargs):
-    logger.info("Make Income Prediction...")
+    logger.info("Making Income Prediction...")
     data_paths = args[0]
     dvc_client = DVCClient()
 
