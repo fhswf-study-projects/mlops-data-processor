@@ -11,6 +11,7 @@ from app.constants import EnvConfig
 
 
 logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 class DVCClient:

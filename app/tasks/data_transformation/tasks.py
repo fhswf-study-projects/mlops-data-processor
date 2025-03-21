@@ -16,6 +16,7 @@ from app.core.dvc_client import DVCClient
 
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 @current_app.task(name="data_transformation.engineer_features")
