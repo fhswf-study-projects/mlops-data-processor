@@ -32,7 +32,7 @@ def load_data(*args, **kwargs):
     if use_feeback_data:
         df_feedback = dvc_client.read_data_from(
             source=kwargs["body"]["feedback_path"], bucket_name=bucket
-        )  # type: ignore
+        )
         df = pd.concat([df, df_feedback], ignore_index=True).drop_duplicates()  # type: ignore
 
     return {
