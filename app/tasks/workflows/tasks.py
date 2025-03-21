@@ -1,3 +1,7 @@
+"""Workflow tasks serve purpose of gathering (actually chaining) small steps
+making it like a pipeline of celery tasks.
+"""
+
 import logging
 
 import pandas as pd
