@@ -29,6 +29,7 @@ from app.utils import plot_confusion_matrix
 
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 N_ESTIMATORS_BASE = 100
 EXPERIMENT_NAME = "income_classification"
@@ -53,14 +54,6 @@ def train_base_model(*args, **kwargs):
         X, y, test_size=0.2, random_state=RANDOM_STATE
     )
 
-    # if optimized and best_params:
-    #     if "n_estimators" in best_params:
-    #         model = RandomForestClassifier(n_estimators=int(best_params["n_estimators"]),
-    #                                     max_depth=int(best_params["max_depth"]),
-    #                                     random_state=RANDOM_STATE)
-    #     elif "C" in best_params:
-    #         model = LogisticRegression(C=float(best_params["C"]), max_iter=1000)
-    # else:
     model = RandomForestClassifier(
         n_estimators=N_ESTIMATORS_BASE, random_state=RANDOM_STATE
     )
@@ -78,12 +71,12 @@ def train_base_model(*args, **kwargs):
 
     with mlflow.start_run():
         mlflow.log_param("model", type(model).__name__)
-        # if optimized:
-        #     mlflow.log_params(best_params)
         mlflow.log_metric("accuracy", accuracy)  # type: ignore
         mlflow.log_metric("precision", precision)  # type: ignore
         mlflow.log_metric("recall", recall)  # type: ignore
         mlflow.log_metric("f1_score", f1)  # type: ignore
+        mlflow.log_metric("train_shape_rows", X_train.shape[0])  # type: ignore
+        mlflow.log_metric("train_shape_cols", X_train.shape[1])  # type: ignore
 
         cm_filename = "artifacts/confusion_matrix.png"
         plot_confusion_matrix(cm, cm_filename)
@@ -134,12 +127,15 @@ def optimize_hyperparameters(*args, **kwargs):
         cm = confusion_matrix(y_test, y_pred)
 
         with mlflow.start_run():
+            mlflow.log_param("model", type(model).__name__)
             mlflow.log_param("n_estimators", n_estimators)
             mlflow.log_param("max_depth", max_depth)
             mlflow.log_metric("accuracy", accuracy)  # type: ignore
             mlflow.log_metric("precision", precision)  # type: ignore
             mlflow.log_metric("recall", recall)  # type: ignore
             mlflow.log_metric("f1_score", f1)  # type: ignore
+            mlflow.log_metric("train_shape_rows", X_train.shape[0])  # type: ignore
+            mlflow.log_metric("train_shape_cols", X_train.shape[1])  # type: ignore
 
             cm_filename = "artifacts/confusion_matrix_optuna.png"
             plot_confusion_matrix(cm, cm_filename)
@@ -160,7 +156,7 @@ def optimize_hyperparameters(*args, **kwargs):
         return accuracy
 
     study = optuna.create_study(direction="maximize")
-    study.optimize(objective, n_trials=10)  # type: ignore
+    study.optimize(objective, n_trials=3)  # type: ignore
 
     logger.info("Model saved under income_classification_hyperopt")
 
