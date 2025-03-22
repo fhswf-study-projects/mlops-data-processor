@@ -46,7 +46,7 @@ class DVCClient:
             obj = joblib.load(buffer)  # Deserialize object
             logger.info(f"Downloaded {source}")
         except ClientError as e:
-            logger.error("Error in downloading file:", e)
+            logger.error(f"Error in downloading file: {e}")
         return obj
 
     def save_data_to(self, obj, destination: str, bucket_name=None) -> str:
