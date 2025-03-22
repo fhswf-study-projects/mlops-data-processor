@@ -16,5 +16,6 @@ class Config:
     task_acks_late = True
     task_send_sent_event = True
 
+    worker_hijack_root_logger = False
     worker_prefetch_multiplier = 1
     worker_send_task_event = True
