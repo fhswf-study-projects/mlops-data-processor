@@ -6,6 +6,8 @@ from app.core.celery.celeryconfig import Config
 
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 logger.info("Setting up Celery app...")
 
 current_app = Celery("data-processor-worker")
