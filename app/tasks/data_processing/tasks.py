@@ -23,7 +23,7 @@ def load_data(*args, **kwargs):
 
     filepath = kwargs["body"]["filepath"]
     bucket = kwargs["body"]["bucket"]
-    use_feeback_data = kwargs["body"]["use_feeback_data"]
+    use_feeback_data = kwargs["body"]["use_feedback_data"]
 
     dvc_client = DVCClient()
 
