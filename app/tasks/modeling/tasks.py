@@ -29,6 +29,7 @@ from app.utils import plot_confusion_matrix
 
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 N_ESTIMATORS_BASE = 100
 EXPERIMENT_NAME = "income_classification"

@@ -12,11 +12,13 @@ from app.core.dvc_client import DVCClient
 
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 @current_app.task(name="workflows.model_training", acks_late=True)
 def model_training_workflow(*args, **kwargs):
     optimize = kwargs["body"].get("optimize", False)
+    include_user_data = kwargs["body"].get("include_user_data", False)
     tasks = [
         signature(
             "data_processing.load_data",
@@ -24,6 +26,8 @@ def model_training_workflow(*args, **kwargs):
                 "body": {
                     "filepath": kwargs["body"]["filepath"],
                     "bucket": kwargs["body"]["bucket"],
+                    "include_user_data": include_user_data,
+                    "feedback_path": kwargs["body"]["feedback_path"],
                 }
             },
         ),
