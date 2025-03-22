@@ -26,7 +26,7 @@ def model_training_workflow(*args, **kwargs):
                 "body": {
                     "filepath": kwargs["body"]["filepath"],
                     "bucket": kwargs["body"]["bucket"],
-                    "include_user_data": include_user_data,
+                    "use_feedback_data": include_user_data,
                     "feedback_path": kwargs["body"]["feedback_path"],
                 }
             },
