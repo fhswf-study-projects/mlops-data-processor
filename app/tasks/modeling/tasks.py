@@ -156,7 +156,7 @@ def optimize_hyperparameters(*args, **kwargs):
         return accuracy
 
     study = optuna.create_study(direction="maximize")
-    study.optimize(objective, n_trials=10)  # type: ignore
+    study.optimize(objective, n_trials=3)  # type: ignore
 
     logger.info("Model saved under income_classification_hyperopt")
 
