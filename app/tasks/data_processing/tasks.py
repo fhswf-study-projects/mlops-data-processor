@@ -33,9 +33,10 @@ def load_data(*args, **kwargs):
         df_feedback = dvc_client.read_data_from(
             source=kwargs["body"]["feedback_path"], bucket_name=bucket
         )
-        # Concatenate only on common columns
-        common_cols = df.columns.intersection(df_feedback.columns)  # type: ignore
-        df = pd.concat([df[common_cols], df_feedback[common_cols]], ignore_index=True).drop_duplicates()  # type: ignore
+        if df_feedback is not None:
+            # Concatenate only on common columns
+            common_cols = df.columns.intersection(df_feedback.columns)  # type: ignore
+            df = pd.concat([df[common_cols], df_feedback[common_cols]], ignore_index=True).drop_duplicates()  # type: ignore
 
     return {
         "df": dvc_client.save_data_to(df, "load_data/df.jobib"),
